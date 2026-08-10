@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AI 简历填写助手</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;background:#f5f6f8}
+.hd{background:#1a2035;color:#fff;height:54px;padding:0 32px;display:flex;align-items:center;gap:16px;flex-shrink:0}
+.hd h1{font-size:15px;font-weight:700;letter-spacing:.3px}
+.hd p{font-size:12px;opacity:.4;border-left:1px solid rgba(255,255,255,.15);padding-left:14px}
+.layout{display:flex;flex:1;min-height:0}
+.sb{width:260px;background:#1a2035;display:flex;flex-direction:column;flex-shrink:0}
+.sb-label{padding:24px 20px 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.3)}
+.sb-num{padding:0 20px 20px;font-size:32px;font-weight:800;color:#fff;line-height:1}
+.sb-num small{font-size:13px;font-weight:400;opacity:.35;margin-left:6px}
+.sb-items{flex:1;overflow-y:auto;padding:0 12px 20px}
+.vi{background:rgba(255,255,255,.06);border-radius:8px;padding:11px 14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;transition:background .15s;cursor:default}
+.vi:hover{background:rgba(255,255,255,.1)}
+.vi-name{font-size:13px;color:#e8ecf4;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vi-del{background:none;border:1px solid rgba(255,100,100,.3);color:rgba(255,120,120,.6);border-radius:5px;padding:2px 8px;font-size:11px;cursor:pointer;transition:all .15s;flex-shrink:0;margin-left:8px}
+.vi-del:hover{border-color:#ff6b6b;color:#ff6b6b;background:rgba(255,100,100,.1)}
+.sb-empty{color:rgba(255,255,255,.2);font-size:13px;text-align:center;padding:32px 16px;line-height:1.8}
+.main{flex:1;overflow-y:auto;padding:40px 56px}
+.page-title{font-size:24px;font-weight:700;color:#1a1a2e;margin-bottom:6px}
+.page-sub{font-size:13px;color:#999;margin-bottom:28px}
+.card{background:#fff;border-radius:12px;border:1px solid #eaecf0;overflow:hidden;max-width:620px}
+.srow{display:flex;gap:20px;padding:24px 28px;border-bottom:1px solid #f2f3f5;align-items:flex-start}
+.srow:last-child{border-bottom:none}
+.sn{width:30px;height:30px;border-radius:50%;background:#eef2ff;color:#4263eb;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.sb2{flex:1}
+.sl{font-size:14px;font-weight:600;color:#1c1e21;margin-bottom:3px}
+.sh{font-size:12px;color:#b0b4bc;margin-bottom:10px}
+input[type=text]{width:100%;padding:10px 13px;border:1.5px solid #e2e5eb;border-radius:8px;font-size:14px;color:#333;outline:none;transition:border-color .15s}
+input[type=text]:focus{border-color:#4263eb}
+.drop{border:2px dashed #d4d9e8;border-radius:10px;padding:30px;text-align:center;cursor:pointer;transition:all .15s;background:#fbfcff;user-select:none}
+.drop:hover,.drop.ov{border-color:#4263eb;background:#f0f4ff}
+.di{font-size:22px;margin-bottom:6px}
+.dt{font-size:13px;color:#aaa;line-height:1.7}
+.fs{font-size:13px;color:#4263eb;font-weight:600;margin-top:8px}
+.btn{width:100%;padding:12px;background:#4263eb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.2px;transition:background .15s}
+.btn:hover{background:#3451d1}
+.btn:disabled{background:#c5cde8;cursor:not-allowed}
+.st{margin-top:10px;font-size:13px;text-align:center;min-height:18px}
+.ok{color:#087f5b}.er{color:#c92a2a}.ld{color:#868e96}
+</style>
+</head>
+<body>
+<div class="hd"><h1>AI 简历填写助手</h1><p>管理简历版本 · 配合插件自动填写招聘表单</p></div>
+<div class="layout">
+  <div class="sb">
+    <div class="sb-label">已上传的简历</div>
+    <div class="sb-num" id="vcnt">0<small>个版本</small></div>
+    <div class="sb-items" id="vlist"><div class="sb-empty">还没有简历<br>请先上传一份</div></div>
+  </div>
+  <div class="main">
+    <div class="page-title">上传简历</div>
+    <div class="page-sub">上传后可在浏览器插件中选择版本，自动填写招聘表单</div>
+    <div class="card">
+      <div class="srow">
+        <div class="sn">1</div>
+        <div class="sb2">
+          <div class="sl">给这份简历起个名字</div>
+          <div class="sh">用于区分不同版本，如：国央企、互联网、外企</div>
+          <input type="text" id="pname" placeholder="输入名称，如：国央企"/>
+        </div>
+      </div>
+      <div class="srow">
+        <div class="sn">2</div>
+        <div class="sb2">
+          <div class="sl">选择简历文件</div>
+          <div class="sh">支持 PDF 和 Word（.docx）格式</div>
+          <div class="drop" id="drop" onclick="document.getElementById('fi').click()">
+            <div class="di">📎</div>
+            <div class="dt">点击选择文件，或将文件拖拽到此处</div>
+            <div class="fs" id="fs"></div>
+          </div>
+          <input type="file" id="fi" accept=".pdf,.docx" hidden onchange="onF(this)"/>
+        </div>
+      </div>
+      <div class="srow">
+        <div class="sn">3</div>
+        <div class="sb2">
+          <div class="sl">解析并保存</div>
+          <div class="sh">AI 自动提取简历内容，约需 20–40 秒</div>
+          <button class="btn" id="ub" onclick="up()" disabled>开始上传并解析</button>
+          <div class="st" id="st"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const drop=document.getElementById('drop');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('ov')});
+drop.addEventListener('dragleave',()=>drop.classList.remove('ov'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('ov');if(e.dataTransfer.files[0])setF(e.dataTransfer.files[0])});
+let sel=null;
+function onF(i){if(i.files[0])setF(i.files[0])}
+function setF(f){sel=f;document.getElementById('fs').textContent='已选择：'+f.name;document.getElementById('ub').disabled=false}
+async function up(){
+  const name=document.getElementById('pname').value.trim()||'default';
+  const st=document.getElementById('st'),btn=document.getElementById('ub');
+  if(!sel)return;btn.disabled=true;
+  st.className='st ld';st.textContent='正在解析，请耐心等待（约 20–40 秒）…';
+  const fd=new FormData();fd.append('file',sel);fd.append('profile_name',name);
+  try{
+    const r=await fetch('/upload-resume',{method:'POST',body:fd});
+    if(!r.ok)throw new Error(await r.text());
+    st.className='st ok';st.textContent='✓ 简历「'+name+'」已保存';
+    sel=null;document.getElementById('fs').textContent='';document.getElementById('fi').value='';
+    document.getElementById('pname').value='';btn.disabled=true;load();
+  }catch(e){st.className='st er';st.textContent='上传失败：'+e.message;btn.disabled=false}
+}
+async function load(){
+  const vl=document.getElementById('vlist'),vc=document.getElementById('vcnt');
+  try{
+    const d=await(await fetch('/profiles')).json();
+    vc.innerHTML=d.profiles.length+'<small>个版本</small>';
+    vl.innerHTML=d.profiles.length?d.profiles.map(n=>`<div class="vi"><span class="vi-name">📋 ${n}</span><button class="vi-del" onclick="del('${n}')">删除</button></div>`).join(''):'<div class="sb-empty">还没有简历<br>请先上传一份</div>';
+  }catch{vl.innerHTML='<div class="sb-empty">⚠ 无法连接服务</div>'}
+}
+async function del(n){
+  if(!confirm('确认删除「'+n+'」？'))return;
+  await fetch('/profiles/'+encodeURIComponent(n),{method:'DELETE'});load();
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>个人信息库 — AI 简历填写助手</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;background:#f5f6f8;color:#222}
+.hd{background:#1a2035;color:#fff;height:52px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hd-left{display:flex;align-items:center;gap:12px}
+.hd h1{font-size:15px;font-weight:700}
+.hd-actions{display:flex;gap:8px}
+.hd-btn{padding:6px 14px;border-radius:6px;border:none;font-size:13px;cursor:pointer;font-weight:500}
+.btn-parse{background:#4263eb;color:#fff}.btn-parse:hover{background:#3451d1}
+.btn-api{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}.btn-api:hover{background:rgba(255,255,255,.18)}
+.layout{display:flex;flex:1;min-height:0}
+.nav{width:160px;background:#fff;border-right:1px solid #e8eaed;padding:16px 0;overflow-y:auto;flex-shrink:0}
+.nav-item{padding:9px 20px;font-size:13px;cursor:pointer;color:#555;transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:#f0f4ff;color:#4263eb}
+.nav-item.active{background:#f0f4ff;color:#4263eb;border-left-color:#4263eb;font-weight:600}
+.main{flex:1;overflow-y:auto;padding:28px 40px}
+.section{display:none}.section.active{display:block}
+.section-title{font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:4px}
+.section-sub{font-size:13px;color:#aaa;margin-bottom:24px}
+.field-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px}
+.field-grid.full{grid-template-columns:1fr}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12px;color:#666;font-weight:500}
+.field input,.field select,.field textarea{padding:9px 12px;border:1.5px solid #e2e5eb;border-radius:8px;font-size:13px;color:#333;outline:none;transition:border-color .15s;font-family:inherit}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#4263eb}
+.field textarea{resize:vertical;min-height:80px}
+.save-bar{display:flex;align-items:center;gap:12px;margin-top:8px}
+.btn-save{padding:9px 24px;background:#4263eb;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}.btn-save:hover{background:#3451d1}
+.save-msg{font-size:12px;color:#087f5b}
+.list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.btn-add{padding:6px 14px;background:#eef2ff;color:#4263eb;border:1px solid #c5d0f5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer}.btn-add:hover{background:#dce4ff}
+.card{background:#fff;border:1.5px solid #e8eaed;border-radius:10px;margin-bottom:10px;overflow:hidden}
+.card-head{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.card-head:hover{background:#fafbff}
+.card-title{font-size:13px;font-weight:600;color:#1c1e21}
+.card-sub{font-size:12px;color:#aaa;margin-top:1px}
+.card-actions{display:flex;gap:6px;flex-shrink:0}
+.btn-icon{padding:3px 10px;border-radius:5px;font-size:11px;cursor:pointer;border:1px solid #e0e0e0;background:#fff;color:#555}.btn-icon:hover{background:#f0f0f0}
+.btn-icon.del{border-color:#fbb;color:#c00}.btn-icon.del:hover{background:#fff0f0}
+.card-body{padding:16px;border-top:1px solid #f0f0f0;display:none}
+.card-body.open{display:block}
+.custom-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.custom-row input{flex:1;padding:8px 10px;border:1.5px solid #e2e5eb;border-radius:7px;font-size:13px;outline:none}
+.custom-row input:focus{border-color:#4263eb}
+.btn-row-del{padding:5px 10px;background:none;border:1px solid #fbb;color:#c00;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:28px;width:560px;max-width:90vw}
+.modal h2{font-size:16px;font-weight:700;margin-bottom:8px}
+.modal p{font-size:13px;color:#888;margin-bottom:14px}
+.modal textarea{width:100%;height:200px;padding:12px;border:1.5px solid #e2e5eb;border-radius:8px;font-size:13px;resize:vertical;outline:none;font-family:inherit}
+.modal textarea:focus{border-color:#4263eb}
+.modal-actions{display:flex;gap:8px;margin-top:14px;justify-content:flex-end}
+.btn-cancel{padding:8px 18px;background:#f0f0f0;border:none;border-radius:7px;font-size:13px;cursor:pointer}
+.btn-confirm{padding:8px 18px;background:#4263eb;color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer}
+.modal-st{font-size:13px;color:#868e96;margin-top:8px}
+/* API modal */
+.api-field{margin-bottom:14px}
+.api-field label{font-size:12px;color:#666;display:block;margin-bottom:5px;font-weight:500}
+.api-field input{width:100%;padding:9px 12px;border:1.5px solid #e2e5eb;border-radius:8px;font-size:13px;outline:none}
+.api-field input:focus{border-color:#4263eb}
+</style>
+</head>
+<body>
+<div class="hd">
+  <div class="hd-left">
+    <h1>🗂 个人信息库</h1>
+    <select id="versionSelect" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;margin-left:12px"></select>
+    <button class="hd-btn" id="newVersionBtn" style="background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);font-size:12px;padding:4px 10px">+ 新版本</button>
+    <button class="hd-btn" id="delVersionBtn" style="background:none;color:rgba(255,120,120,.8);border:1px solid rgba(255,100,100,.3);font-size:12px;padding:4px 10px">删除版本</button>
+  </div>
+  <div class="hd-actions">
+    <button class="hd-btn btn-parse" id="parseBtn">✦ 粘贴文本解析</button>
+    <button class="hd-btn btn-api" id="apiBtn">⚙ API 设置</button>
+  </div>
+</div>
+<div class="layout">
+  <div class="nav" id="nav"></div>
+  <div class="main" id="main"></div>
+</div>
+
+<!-- 粘贴解析 Modal -->
+<div class="modal-overlay" id="parseModal">
+  <div class="modal">
+    <h2>粘贴文本解析</h2>
+    <p>将任意文本（简历、个人介绍等）粘贴到下方，AI 将自动提取并填入对应字段</p>
+    <textarea id="parseText" placeholder="粘贴文本内容..."></textarea>
+    <div class="modal-st" id="parseSt"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="parseCancelBtn">取消</button>
+      <button class="btn-confirm" id="parseConfirmBtn">开始解析</button>
+    </div>
+  </div>
+</div>
+
+<!-- API 设置 Modal -->
+<div class="modal-overlay" id="apiModal">
+  <div class="modal">
+    <h2>API 设置</h2>
+    <div class="api-field">
+      <label>API Key</label>
+      <input type="password" id="apiKey" placeholder="sk-ant-..."/>
+    </div>
+    <div class="api-field">
+      <label>代理地址（可选，留空使用官方）</label>
+      <input type="text" id="baseUrl" placeholder="https://api.anthropic.com"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="apiCancelBtn">取消</button>
+      <button class="btn-confirm" id="apiSaveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<script src="options.js"></script>
+</body>
+</html>

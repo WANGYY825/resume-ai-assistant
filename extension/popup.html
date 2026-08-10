@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body { width: 300px; padding: 16px; font-family: system-ui, sans-serif; }
+    h3 { margin: 0 0 12px; font-size: 15px; }
+    label { font-size: 12px; color: #555; display: block; margin-bottom: 4px; }
+    select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    button {
+      width: 100%;
+      padding: 8px;
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover { background: #1558b0; }
+    button:disabled { background: #aaa; cursor: not-allowed; }
+    #status { margin-top: 10px; font-size: 13px; color: #555; min-height: 20px; }
+    #profileError { font-size: 12px; color: #c00; margin-bottom: 8px; display: none; }
+  </style>
+</head>
+<body>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <h3 style="margin:0">AI 简历填写助手</h3>
+    <a href="#" id="settingsLink" style="font-size:12px;color:#1a73e8;text-decoration:none">⚙ 管理简历</a>
+  </div>
+  <div id="profileError">⚠ 未设置简历，请先<a href="#" id="settingsLink2" style="color:#1a73e8">打开设置</a>上传</div>
+  <label for="profileSelect">简历版本</label>
+  <select id="profileSelect"></select>
+  <label for="fillTarget">指定填写内容（可选）</label>
+  <select id="fillTarget">
+    <option value="">自动匹配</option>
+  </select>
+  <button id="scanBtn" disabled>扫描并自动填写</button>
+  <div id="status"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
