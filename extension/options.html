@@ -77,13 +77,84 @@ body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;display:flex;flex
     <button class="hd-btn" id="delVersionBtn" style="background:none;color:rgba(255,120,120,.8);border:1px solid rgba(255,100,100,.3);font-size:12px;padding:4px 10px">删除版本</button>
   </div>
   <div class="hd-actions">
+    <button class="hd-btn btn-parse" id="uploadBtn">📄 上传简历</button>
     <button class="hd-btn btn-parse" id="parseBtn">✦ 粘贴文本解析</button>
+    <button class="hd-btn btn-parse" id="importFormBtn">📋 从表单导入</button>
+    <button class="hd-btn btn-parse" id="screenshotBtn">📸 识别截图</button>
     <button class="hd-btn btn-api" id="apiBtn">⚙ API 设置</button>
   </div>
 </div>
 <div class="layout">
   <div class="nav" id="nav"></div>
   <div class="main" id="main"></div>
+</div>
+
+<!-- 识别截图 Modal -->
+<div class="modal-overlay" id="screenshotModal">
+  <div class="modal">
+    <h2>识别表单截图</h2>
+    <p>上传或粘贴招聘表单的截图，AI 将自动识别字段和已填值</p>
+
+    <div style="margin-bottom:12px">
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <button class="btn-add" id="selectFileBtn" style="flex:1;padding:10px">📁 选择文件</button>
+        <button class="btn-add" id="pasteImageBtn" style="flex:1;padding:10px">📋 粘贴图片 (Ctrl+V)</button>
+      </div>
+      <input type="file" id="screenshotFiles" accept="image/*" multiple style="display:none"/>
+    </div>
+
+    <div id="pasteArea" style="border:2px dashed #ccc;border-radius:8px;padding:40px;text-align:center;background:#fafafa;margin-bottom:12px;cursor:pointer;display:none">
+      <div style="font-size:48px;margin-bottom:8px">📋</div>
+      <div style="font-size:14px;color:#666;margin-bottom:4px">点击此处激活，然后按 Ctrl+V 粘贴截图</div>
+      <div style="font-size:12px;color:#999">支持从剪贴板直接粘贴 QQ/微信/系统截图</div>
+    </div>
+
+    <div style="font-size:12px;color:#888;margin-bottom:12px">
+      💡 提示：截图后直接 Ctrl+V 粘贴，无需保存文件。支持同时上传/粘贴多张
+    </div>
+
+    <div id="screenshotPreview" style="display:none;margin-bottom:12px;max-height:200px;overflow-y:auto">
+      <div style="font-size:12px;color:#666;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">
+        <span>已选择的图片：</span>
+        <button id="clearImages" style="font-size:11px;padding:2px 8px;background:#f0f0f0;border:1px solid #ddd;border-radius:4px;cursor:pointer">清空</button>
+      </div>
+      <div id="screenshotList" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+
+    <div class="modal-st" id="screenshotSt"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="screenshotCancelBtn">取消</button>
+      <button class="btn-confirm" id="screenshotConfirmBtn">开始识别</button>
+    </div>
+  </div>
+</div>
+
+<!-- 从表单导入 Modal -->
+<div class="modal-overlay" id="importFormModal">
+  <div class="modal">
+    <h2>从已填表单导入</h2>
+    <p>将你已经在招聘网站填写过的内容批量导入到信息库，避免重复输入</p>
+    <textarea id="importFormText" placeholder="将招聘页面的全部内容复制粘贴到这里（Ctrl+A 全选，Ctrl+C 复制）&#10;&#10;例如：中国电信校园招聘表单、智联招聘表单等"></textarea>
+    <div class="modal-st" id="importFormSt"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="importFormCancelBtn">取消</button>
+      <button class="btn-confirm" id="importFormConfirmBtn">开始导入</button>
+    </div>
+  </div>
+</div>
+
+<!-- 上传简历 Modal -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <h2>上传简历文件</h2>
+    <p>支持 PDF 或 Word 文档，AI 将自动提取并填入对应字段</p>
+    <input type="file" id="resumeFile" accept=".pdf,.docx" style="width:100%;padding:12px;border:1.5px solid #e2e5eb;border-radius:8px;font-size:13px;margin-bottom:8px"/>
+    <div class="modal-st" id="uploadSt"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="uploadCancelBtn">取消</button>
+      <button class="btn-confirm" id="uploadConfirmBtn">开始解析</button>
+    </div>
+  </div>
 </div>
 
 <!-- 粘贴解析 Modal -->
@@ -119,6 +190,8 @@ body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;display:flex;flex
   </div>
 </div>
 
+<script src="lib/pdf.min.js"></script>
+<script src="lib/mammoth.min.js"></script>
 <script src="options.js"></script>
 </body>
 </html>

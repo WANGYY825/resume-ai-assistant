@@ -24,6 +24,57 @@ function getLabel(input) {
   return '';
 }
 
+function extractFilledFields() {
+  const selectors =
+    "input:not([type=hidden]):not([type=submit]):not([type=button]):not([type=password]), textarea, select";
+  const elements = Array.from(document.querySelectorAll(selectors)).filter((el) => {
+    const style = window.getComputedStyle(el);
+    return style.display !== "none" && style.visibility !== "hidden";
+  });
+
+  const filledFields = [];
+  elements.forEach((el) => {
+    let value = "";
+    let displayValue = "";
+
+    if (el.tagName === "SELECT") {
+      const selected = el.options[el.selectedIndex];
+      if (selected && selected.value && selected.value !== "" && selected.text !== "请选择") {
+        value = selected.value;
+        displayValue = selected.text.trim();
+      }
+    } else if (el.type === "checkbox") {
+      if (el.checked) {
+        value = "true";
+        displayValue = "已勾选";
+      }
+    } else if (el.type === "radio") {
+      if (el.checked) {
+        value = el.value;
+        displayValue = el.value;
+      }
+    } else {
+      value = el.value?.trim() || "";
+      displayValue = value;
+    }
+
+    if (value && value !== "") {
+      filledFields.push({
+        tag: el.tagName.toLowerCase(),
+        type: el.type || "",
+        name: el.name || "",
+        label: getLabel(el),
+        value: value,
+        displayValue: displayValue,
+        placeholder: el.placeholder || "",
+      });
+    }
+  });
+
+  console.log(`[AI填写助手] 提取到 ${filledFields.length} 个已填字段:`, filledFields);
+  return filledFields;
+}
+
 function scanFields() {
   const selectors =
     "input:not([type=hidden]):not([type=submit]):not([type=button]), textarea, select";
@@ -103,6 +154,12 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     sendResponse({ fields });
   }
 
+  if (message.type === "EXTRACT_FILLED_FIELDS") {
+    const filledFields = extractFilledFields();
+    chrome.runtime.sendMessage({ type: "FILLED_FIELDS_EXTRACTED", filledFields });
+    sendResponse({ filledFields });
+  }
+
   if (message.type === "FILL_FIELDS") {
     let filled = 0;
     for (const { selector, value } of message.matches) {
@@ -118,6 +175,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     }
     console.log(`[AI填写助手] 已填写 ${filled} 个字段`);
     sendResponse({ filled });
+  }
+
+  if (message.type === "EXTRACTION_RESULT") {
+    alert(`提取成功！\n\n已保存到简历版本: ${message.versionName}\n\n提取字段数: ${message.extractedCount}\n\n请在插件设置页查看和编辑。`);
   }
 
   return true;

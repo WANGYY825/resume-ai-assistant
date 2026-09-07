@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>简历表单测试页 - 测试页面提取功能</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+    .form-section {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .form-section:last-child {
+      border-bottom: none;
+    }
+    .form-section h2 {
+      font-size: 18px;
+      color: #1a73e8;
+      margin-bottom: 15px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #555;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .hint {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .hint strong {
+      color: #1a73e8;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>🧪 招聘表单测试页</h1>
+
+    <div class="hint">
+      <strong>测试说明：</strong><br>
+      1. 此页面已预填了测试数据<br>
+      2. 点击浏览器插件的「从页面提取信息」按钮<br>
+      3. 等待提取完成，然后在插件设置页查看结果
+    </div>
+
+    <form>
+      <div class="form-section">
+        <h2>基本信息</h2>
+
+        <div class="form-group">
+          <label for="name">姓名 *</label>
+          <input type="text" id="name" name="name" value="张三" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">手机号码 *</label>
+          <input type="tel" id="phone" name="phone" value="13812345678" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">电子邮箱 *</label>
+          <input type="email" id="email" name="email" value="zhangsan@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="location">所在城市</label>
+          <select id="location" name="location">
+            <option value="">请选择</option>
+            <option value="北京">北京</option>
+            <option value="上海" selected>上海</option>
+            <option value="深圳">深圳</option>
+            <option value="杭州">杭州</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>教育经历</h2>
+
+        <div class="form-group">
+          <label for="school">毕业院校</label>
+          <input type="text" id="school" name="school" value="浙江大学">
+        </div>
+
+        <div class="form-group">
+          <label for="degree">学历</label>
+          <select id="degree" name="degree">
+            <option value="">请选择</option>
+            <option value="专科">专科</option>
+            <option value="本科" selected>本科</option>
+            <option value="硕士">硕士</option>
+            <option value="博士">博士</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="major">专业</label>
+          <input type="text" id="major" name="major" value="计算机科学与技术">
+        </div>
+
+        <div class="form-group">
+          <label for="graduation">毕业时间</label>
+          <input type="text" id="graduation" name="graduation" value="2020-06" placeholder="格式：YYYY-MM">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>工作经历</h2>
+
+        <div class="form-group">
+          <label for="company">公司名称</label>
+          <input type="text" id="company" name="company" value="阿里巴巴集团">
+        </div>
+
+        <div class="form-group">
+          <label for="position">职位</label>
+          <input type="text" id="position" name="position" value="前端工程师">
+        </div>
+
+        <div class="form-group">
+          <label for="work_start">入职时间</label>
+          <input type="text" id="work_start" name="work_start" value="2020-07">
+        </div>
+
+        <div class="form-group">
+          <label for="work_end">离职时间</label>
+          <input type="text" id="work_end" name="work_end" value="2023-08">
+        </div>
+
+        <div class="form-group">
+          <label for="work_desc">工作内容</label>
+          <textarea id="work_desc" name="work_desc">负责电商平台前端开发，主要使用 React 和 TypeScript。参与商品详情页、购物车、订单系统的重构，优化首屏加载速度 40%。带领 3 人小组完成移动端 H5 适配，月活用户超 500 万。</textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>项目经历</h2>
+
+        <div class="form-group">
+          <label for="project_name">项目名称</label>
+          <input type="text" id="project_name" name="project_name" value="电商中台系统">
+        </div>
+
+        <div class="form-group">
+          <label for="project_desc">项目描述</label>
+          <textarea id="project_desc" name="project_desc">基于微前端架构的电商中台系统，整合商品、订单、库存、营销等模块。采用 qiankun 实现子应用隔离，主应用使用 Vue 3，子应用支持 React/Vue 混用。引入 TypeScript 提升代码质量，接入 Sentry 监控线上异常。</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="tech_stack">技术栈</label>
+          <input type="text" id="tech_stack" name="tech_stack" value="React, TypeScript, Webpack, Ant Design, qiankun" placeholder="多个技能用逗号分隔">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>技能特长</h2>
+
+        <div class="form-group">
+          <label for="skills">专业技能</label>
+          <textarea id="skills" name="skills">JavaScript, TypeScript, React, Vue, Node.js, Webpack, Git, MySQL, Redis</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="language">外语能力</label>
+          <select id="language" name="language">
+            <option value="">请选择</option>
+            <option value="一般">一般</option>
+            <option value="良好" selected>良好</option>
+            <option value="熟练">熟练</option>
+            <option value="精通">精通</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>其他信息</h2>
+
+        <div class="form-group">
+          <label for="github">GitHub 主页</label>
+          <input type="text" id="github" name="github" value="https://github.com/zhangsan">
+        </div>
+
+        <div class="form-group">
+          <label for="self_intro">自我介绍</label>
+          <textarea id="self_intro" name="self_intro">3 年前端开发经验，熟悉 React 生态和工程化实践。有大型项目架构经验，关注性能优化和用户体验。具备良好的代码规范意识和团队协作能力，能快速学习新技术并应用到项目中。</textarea>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

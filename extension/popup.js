@@ -68,3 +68,24 @@ document.getElementById('scanBtn').addEventListener('click', async () => {
     setTimeout(() => { status.textContent = '填写完成，请检查高亮字段后提交。'; btn.disabled = false; }, 15000);
   });
 });
+
+document.getElementById('extractBtn').addEventListener('click', async () => {
+  const status = document.getElementById('status');
+  const btn = document.getElementById('extractBtn');
+  btn.disabled = true;
+  status.textContent = '正在提取页面信息...';
+  const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+  chrome.tabs.sendMessage(tab.id, {type: 'EXTRACT_FILLED_FIELDS'}, response => {
+    if (chrome.runtime.lastError) {
+      status.textContent = '错误：' + chrome.runtime.lastError.message;
+      btn.disabled = false; return;
+    }
+    const count = response?.filledFields?.length ?? 0;
+    if (count === 0) {
+      status.textContent = '未找到已填写的字段';
+      btn.disabled = false; return;
+    }
+    status.textContent = `找到 ${count} 个已填字段，解析中…`;
+    setTimeout(() => { btn.disabled = false; }, 20000);
+  });
+});
